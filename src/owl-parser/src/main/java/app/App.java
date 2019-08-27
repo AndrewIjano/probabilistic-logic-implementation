@@ -15,9 +15,9 @@ public class App {
 
     public static void main(String[] args) throws Exception {
         OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
-        File file = new File("pizza.owl");
-        OWLOntology ontology = manager.loadOntologyFromOntologyDocument(file);
+        // File file = new File("pizza.owl");
+        // OWLOntology ontology = manager.loadOntologyFromOntologyDocument(file);
         
-        System.out.println("Hello World!");
+        // System.out.println(manager.ontologies());
     }
 }
