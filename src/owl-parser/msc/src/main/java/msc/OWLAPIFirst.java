@@ -15,6 +15,10 @@ import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.semanticweb.owlapi.profiles.OWL2ELProfile;
+import org.semanticweb.owlapi.profiles.OWL2Profile;
+import org.semanticweb.owlapi.profiles.OWLProfile;
+import org.semanticweb.owlapi.profiles.OWLProfileReport;
 import org.semanticweb.owlapi.util.DLExpressivityChecker;
 import org.semanticweb.owlapi.*;
 
@@ -36,6 +40,13 @@ public class OWLAPIFirst {
 
 		DLExpressivityChecker dl = new DLExpressivityChecker(Arrays.asList(o3));
 		p(dl.getDescriptionLogicName());
+		
+		OWL2ELProfile o2p = new OWL2ELProfile();
+		OWLProfileReport pr = o2p.checkOntology(o);
+		
+		p(pr + "" + pr.isInProfile());
+		OWLProfile profile = pr.getProfile();
+		p(profile.getName());
 //		
 //		for (OWLLogicalAxiom a : o.logicalAxioms().toArray(OWLLogicalAxiom[]::new)) {
 //			p(a.getAxiomType());
