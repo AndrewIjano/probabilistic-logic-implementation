@@ -3,13 +3,16 @@ package msc;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAnnotation;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataProperty;
 import org.semanticweb.owlapi.model.OWLLogicalAxiom;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
@@ -51,14 +54,29 @@ public class OWLAPIFirst {
 			p("");
 		}
 
+		p("Map IRIs");
+		for (OWLClass c : onts[1].classesInSignature().toArray(OWLClass[]::new)) {
+			
+			p(c);
+			
+		}
+		
 		for (OWLClass c : onts[1].classesInSignature().toArray(OWLClass[]::new)) {
 			p(c);
+			p("@@@");
+			for (OWLAxiom a : onts[1].subClassAxiomsForSuperClass(c).toArray(OWLAxiom[]::new)) {
+				p(a);
+				for (Object ob : a.components().toArray(Object[]::new)) {
+					p(ob);
+				}
+				
+			}
+			p("!!!");
 		}
 		
 		
 		for (OWLNamedIndividual i : onts[1].individualsInSignature().toArray(OWLNamedIndividual[]::new)) {
-			p(i);
-			
+			p(i);	
 		}
 		p("-----");
 		for (OWLAxiom a : onts[1].axioms().toArray(OWLAxiom[]::new)) {
