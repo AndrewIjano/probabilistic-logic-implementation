@@ -25,6 +25,9 @@ import org.semanticweb.owlapi.profiles.OWL2QLProfile;
 import org.semanticweb.owlapi.profiles.OWLProfile;
 import org.semanticweb.owlapi.profiles.OWLProfileReport;
 import org.semanticweb.owlapi.util.DLExpressivityChecker;
+
+import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
+
 import org.semanticweb.owlapi.*;
 
 public class OWLAPIFirst {
@@ -35,6 +38,8 @@ public class OWLAPIFirst {
 	public static final File a_file = new File(
 			"/home/andrew/Downloads/bla-ontologies.owx/bla-ontologies-owx-REVISION-HEAD/a.owx");
 
+	public static final File example1 = new File("example1.owl");
+
 	private static void p(Object o) {
 		System.out.println(o);
 	}
@@ -43,7 +48,8 @@ public class OWLAPIFirst {
 		OWLOntologyManager man = OWLManager.createOWLOntologyManager();
 
 		OWLOntology[] onts = { man.loadOntologyFromOntologyDocument(pizza_file), man.loadOntology(shake_iri),
-				man.loadOntologyFromOntologyDocument(a_file), man.loadOntologyFromOntologyDocument(test_file)};
+				man.loadOntologyFromOntologyDocument(a_file), man.loadOntologyFromOntologyDocument(test_file),
+				man.loadOntologyFromOntologyDocument(example1) };
 
 		for (OWLOntology ont : onts) {
 			OWL2GraphicELProfile gel = new OWL2GraphicELProfile();
@@ -54,65 +60,43 @@ public class OWLAPIFirst {
 			p("");
 		}
 
+		GELGraph G = new GELGraph();
 		p("Map IRIs");
-		for (OWLClass c : onts[1].classesInSignature().toArray(OWLClass[]::new)) {
-			
+		for (OWLClass c : onts[4].classesInSignature().toArray(OWLClass[]::new)) {
 			p(c);
-			
+			G.addVertex(c.getIRI().toString());
 		}
-		
-		for (OWLClass c : onts[1].classesInSignature().toArray(OWLClass[]::new)) {
-			p(c);
-			p("@@@");
-			for (OWLAxiom a : onts[1].subClassAxiomsForSuperClass(c).toArray(OWLAxiom[]::new)) {
-				p(a);
-				for (Object ob : a.components().toArray(Object[]::new)) {
-					p(ob);
-				}
-				
+
+		p("Graph V: " + G.V());
+
+		for (OWLClass c1 : onts[4].classesInSignature().toArray(OWLClass[]::new)) {
+//			p(">>>>>");
+			for (OWLAxiom a : onts[4].subClassAxiomsForSuperClass(c1).toArray(OWLAxiom[]::new)) {
+//				p("(((((");
+				OWLClassImpl c2 = (OWLClassImpl) a.components().toArray(Object[]::new)[0];
+
+				p(c1 + " -> " + c2);
+				G.addArrow(c1.getIRI().toString(), c2.getIRI().toString());
+
+//				for (Object ob : a.components().toArray(Object[]::new)) {
+//					if (ob instanceof OWLClassImpl) {
+//						p(c + " -> " + ob);
+//						G.addArrow(c.getIRI().toString(), ((OWLClassImpl) ob).getIRI().toString());
+//					}
+//				}
+//				p(")))))");
 			}
-			p("!!!");
-		}
-		
-		
-		for (OWLNamedIndividual i : onts[1].individualsInSignature().toArray(OWLNamedIndividual[]::new)) {
-			p(i);	
-		}
-		p("-----");
-		for (OWLAxiom a : onts[1].axioms().toArray(OWLAxiom[]::new)) {
-			p(a);
+//			p("<<<<<");
 		}
 
-		
-//		
-//		for (OWLLogicalAxiom a : o.logicalAxioms().toArray(OWLLogicalAxiom[]::new)) {
-//			p(a.getAxiomType());
-//			
-////			p(a.dataPropertiesInSignature().toArray(OWLDataProperty[]::new).length != 0);
-////			p(a.annotations().toArray(OWLAnnotation[]::new).length != 0);
-////			p(a.classesInSignature().toArray(OWLClass[]::new).length != 0);
-////			p(a.individualsInSignature().toArray(OWLNamedIndividual[]::new).length != 0);
-//			for (OWLClass x : a.classesInSignature().toArray(OWLClass[]::new)) {
-////				p("oi");
-//			
-//				p(x.asOWLClass());
-//			}
-//			
-////			for (OWLDataProperty c : a.dataPropertiesInSignature().toArray(OWLDataProperty[]::new)) {
-////				p(c.asOWLClass());
-////				p("oi");
-////				
-////			}
-//			System.out.println();
+		p("Graph A: " + G.A());
+
+//		for (OWLNamedIndividual i : onts[1].individualsInSignature().toArray(OWLNamedIndividual[]::new)) {
+//			p(i);	
 //		}
-//		o.logicalAxioms().forEach(
-//				(p) -> p.components().forEach( 
-//						(c) -> System.out.println(c)
-//						
-//						)
-//				
-//				);
-
-//		System.out.println(o);
+//		p("-----");
+//		for (OWLAxiom a : onts[1].axioms().toArray(OWLAxiom[]::new)) {
+//			p(a);
+//		}
 	}
 }
