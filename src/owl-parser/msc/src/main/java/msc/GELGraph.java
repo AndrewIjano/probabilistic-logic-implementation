@@ -34,33 +34,78 @@ public class GELGraph {
 		}		
 	}
 	
+	private class Arrow {
+		private Vertex vertex;
+		private String role;
+		
+		public Arrow(Vertex vertex, String roleIRI) {
+			this.vertex = vertex;
+			this.role = roleIRI;
+		}
+		
+		@Override
+		public boolean equals(Object o) {
+			if (o == null) return false;
+			
+			if (this.getClass() != o.getClass()) return false;
+			
+			Arrow a = (Arrow) o;
+			return a.vertex.equals(this.vertex) && a.role.equals(this.role);
+		}
+		
+		@Override
+		public int hashCode() {
+			return this.vertex.hashCode() * this.role.hashCode();
+		}
+		
+		@Override
+		public String toString() {
+			return "(" + this.vertex + ", " + this.role + ")";
+		}
+		
+		public Vertex vertex() {
+			return this.vertex;
+		}
+		
+		public String role() {
+			return this.role;
+		}
+		
+	}
 	private int V;
 	private int A;
-	private Map<Vertex, List<Vertex>> adjVertices;
+	private Map<Vertex, List<Arrow>> adjVertices;
+	private static final String ISA = "ISA";
 	
 	public GELGraph() {
 		this.V = 0;
 		this.A = 0;
-		this.adjVertices = new HashMap<Vertex, List<Vertex>>();
+		this.adjVertices = new HashMap<Vertex, List<Arrow>>();
 	}
 	
 	public void addVertex(String IRI) {
 		if (IRI == null) throw new NullPointerException();
 		
-		this.adjVertices.put(new Vertex(IRI), new ArrayList<Vertex>());
+		this.adjVertices.put(new Vertex(IRI), new ArrayList<Arrow>());
 		this.V++;
 	}
 	
-	public void addArrow(String IRIA, String IRIB) {
-		if (IRIA == null || IRIB == null) throw new NullPointerException();
+	public void addArrowRole(String IRIA, String IRIB, String role) {
+		if (IRIA == null || IRIB == null || role == null) throw new NullPointerException();
 		
+
 		Vertex a = new Vertex(IRIA);
 		Vertex b = new Vertex(IRIB);
+		Arrow ab = new Arrow(b, role);
 		
-		if (this.adjVertices.get(a).contains(b)) throw new IllegalArgumentException();
+		if (this.adjVertices.get(a).contains(ab)) throw new IllegalArgumentException();
 		
-		this.adjVertices.get(a).add(b);
+		this.adjVertices.get(a).add(ab);
 		A++;
+	}
+	
+	public void addArrowISA(String IRIA, String IRIB) {
+		this.addArrowRole(IRIA, IRIB, ISA);
 	}
 	
 	public int V() {

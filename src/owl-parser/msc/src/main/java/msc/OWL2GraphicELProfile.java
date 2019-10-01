@@ -184,7 +184,12 @@ class OWL2GraphicELProfile implements OWLProfile {
         public void visit(OWLClassAssertionAxiom axiom) {
             axiom.getClassExpression().accept(this);
         }
-
+        
+        @Override
+        public void visit(OWLDisjointClassesAxiom axiom) {
+        	profileViolations.add(new UseOfIllegalAxiom(getCurrentOntology(), axiom));
+        }
+        
         @Override
         public void visit(OWLDisjointDataPropertiesAxiom axiom) {
             profileViolations.add(new UseOfIllegalAxiom(getCurrentOntology(), axiom));
