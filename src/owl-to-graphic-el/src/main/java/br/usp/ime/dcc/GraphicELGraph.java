@@ -1,11 +1,11 @@
-package msc;
+package br.usp.ime.dcc;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class GELGraph {
+public class GraphicELGraph {
 	private class Vertex {
 		private String IRI;
 
@@ -77,7 +77,7 @@ public class GELGraph {
 	private Map<Vertex, List<Arrow>> adjVertices;
 	private static final String ISA = "ISA";
 	
-	public GELGraph() {
+	public GraphicELGraph() {
 		this.V = 0;
 		this.A = 0;
 		this.adjVertices = new HashMap<Vertex, List<Arrow>>();
@@ -98,10 +98,10 @@ public class GELGraph {
 		Vertex b = new Vertex(IRIB);
 		Arrow ab = new Arrow(b, role);
 		
-		if (this.adjVertices.get(a).contains(ab)) throw new IllegalArgumentException();
-		
-		this.adjVertices.get(a).add(ab);
-		A++;
+		if (!this.adjVertices.get(a).contains(ab)) {
+			this.adjVertices.get(a).add(ab);
+			A++;			
+		}
 	}
 	
 	public void addArrowISA(String IRIA, String IRIB) {

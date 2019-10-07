@@ -1,4 +1,4 @@
-package msc;
+package br.usp.ime.dcc;
 
 import static org.semanticweb.owlapi.model.parameters.Imports.INCLUDED;
 import static org.semanticweb.owlapi.util.OWLAPIStreamUtils.asUnorderedSet;
