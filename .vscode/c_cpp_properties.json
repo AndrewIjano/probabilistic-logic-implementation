@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "/usr/lib/jvm/java-1.11.0-openjdk-amd64/include/**"
+            ],
+            "defines": [],
+            "compilerPath": "/usr/bin/clang-6.0"
+        }
+    ],
+    "version": 4
+}
