@@ -1,0 +1,175 @@
+<?xml version="1.0"?>
+<Ontology xmlns="http://www.w3.org/2002/07/owl#"
+     xml:base="http://www.semanticweb.org/andrew/ontologies/2019/8/example-2"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     ontologyIRI="http://www.semanticweb.org/andrew/ontologies/2019/8/example-2">
+    <Prefix name="" IRI="http://www.semanticweb.org/andrew/ontologies/2019/8/example-2#"/>
+    <Prefix name="owl" IRI="http://www.w3.org/2002/07/owl#"/>
+    <Prefix name="rdf" IRI="http://www.w3.org/1999/02/22-rdf-syntax-ns#"/>
+    <Prefix name="xml" IRI="http://www.w3.org/XML/1998/namespace"/>
+    <Prefix name="xsd" IRI="http://www.w3.org/2001/XMLSchema#"/>
+    <Prefix name="obda" IRI="https://w3id.org/obda/vocabulary#"/>
+    <Prefix name="rdfs" IRI="http://www.w3.org/2000/01/rdf-schema#"/>
+    <Declaration>
+        <Class IRI="#Dengue"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#Doença"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#DorNasJuntas"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#Enfermidade"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#ErupçãoCutânea"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#FebreAlta"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#Paciente"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#PacienteComSintomaDeDengue"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#Sintoma"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#SintomaCausadoPorDengue"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="#suspeitaDe"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="#temSintoma"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="#éCausado"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="#john"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="#s1"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="#s2"/>
+    </Declaration>
+    <EquivalentClasses>
+        <Class IRI="#Doença"/>
+        <Class IRI="#Enfermidade"/>
+    </EquivalentClasses>
+    <EquivalentClasses>
+        <Class IRI="#PacienteComSintomaDeDengue"/>
+        <ObjectSomeValuesFrom>
+            <ObjectProperty IRI="#temSintoma"/>
+            <Class IRI="#SintomaCausadoPorDengue"/>
+        </ObjectSomeValuesFrom>
+    </EquivalentClasses>
+    <EquivalentClasses>
+        <Class IRI="#SintomaCausadoPorDengue"/>
+        <ObjectSomeValuesFrom>
+            <ObjectProperty IRI="#éCausado"/>
+            <Class IRI="#Dengue"/>
+        </ObjectSomeValuesFrom>
+    </EquivalentClasses>
+    <SubClassOf>
+        <Class IRI="#Dengue"/>
+        <Class IRI="#Doença"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#DorNasJuntas"/>
+        <Class IRI="#Sintoma"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#ErupçãoCutânea"/>
+        <Class IRI="#Sintoma"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#FebreAlta"/>
+        <Class IRI="#Sintoma"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#Paciente"/>
+        <ObjectSomeValuesFrom>
+            <ObjectProperty IRI="#suspeitaDe"/>
+            <Class IRI="#Doença"/>
+        </ObjectSomeValuesFrom>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#Paciente"/>
+        <ObjectSomeValuesFrom>
+            <ObjectProperty IRI="#temSintoma"/>
+            <Class IRI="#Sintoma"/>
+        </ObjectSomeValuesFrom>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#PacienteComSintomaDeDengue"/>
+        <Class IRI="#Paciente"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#PacienteComSintomaDeDengue"/>
+        <ObjectSomeValuesFrom>
+            <ObjectProperty IRI="#suspeitaDe"/>
+            <Class IRI="#Dengue"/>
+        </ObjectSomeValuesFrom>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#Sintoma"/>
+        <ObjectSomeValuesFrom>
+            <ObjectProperty IRI="#éCausado"/>
+            <Class IRI="#Doença"/>
+        </ObjectSomeValuesFrom>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#SintomaCausadoPorDengue"/>
+        <Class IRI="#Sintoma"/>
+    </SubClassOf>
+    <SubClassOf>
+        <ObjectSomeValuesFrom>
+            <ObjectProperty IRI="#temSintoma"/>
+            <ObjectSomeValuesFrom>
+                <ObjectProperty IRI="#éCausado"/>
+                <Class IRI="#Dengue"/>
+            </ObjectSomeValuesFrom>
+        </ObjectSomeValuesFrom>
+        <ObjectSomeValuesFrom>
+            <ObjectProperty IRI="#suspeitaDe"/>
+            <Class IRI="#Dengue"/>
+        </ObjectSomeValuesFrom>
+    </SubClassOf>
+    <ClassAssertion>
+        <Class IRI="#Paciente"/>
+        <NamedIndividual IRI="#john"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="#FebreAlta"/>
+        <NamedIndividual IRI="#s1"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="#DorNasJuntas"/>
+        <NamedIndividual IRI="#s2"/>
+    </ClassAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="#temSintoma"/>
+        <NamedIndividual IRI="#john"/>
+        <NamedIndividual IRI="#s1"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="#temSintoma"/>
+        <NamedIndividual IRI="#john"/>
+        <NamedIndividual IRI="#s2"/>
+    </ObjectPropertyAssertion>
+</Ontology>
+
+
+
+<!-- Generated by the OWL API (version 4.5.9.2019-02-01T07:24:44Z) https://github.com/owlcs/owlapi -->
+
+
