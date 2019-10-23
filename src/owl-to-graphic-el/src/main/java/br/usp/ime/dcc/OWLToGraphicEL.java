@@ -21,7 +21,7 @@ import uk.ac.manchester.cs.owl.owlapi.OWLEquivalentClassesAxiomImpl;
 class OWLToGraphicEL {
 
 	private static void p(Object o) {
-		System.out.println(o);
+//		System.out.println(o);
 	}
 
 	private static String cleanIRI(Object IRI) {
@@ -30,7 +30,7 @@ class OWLToGraphicEL {
 	}
 
 	static GraphicELGraph OWLToGraphicELGraph(String OWLFile) throws OWLOntologyCreationException {
-		File ontologyFile = new File("example1.owl");
+		File ontologyFile = new File(OWLFile);
 		OWLOntologyManager man = OWLManager.createOWLOntologyManager();
 		OWLOntology o = man.loadOntologyFromOntologyDocument(ontologyFile);
 
@@ -58,18 +58,17 @@ class OWLToGraphicEL {
 
 			for (OWLEquivalentClassesAxiomImpl a : o.equivalentClassesAxioms(c1)
 					.toArray(OWLEquivalentClassesAxiomImpl[]::new)) {
-//				p(a);
+
 				OWLClassExpression[] operands = a.operands().toArray(OWLClassExpression[]::new);
 
 				String IRIA = operands[0].asOWLClass().getIRI().toString();
 
-//				operands[1].getClassExpressionType().
+
 				p("Equivalent:");
 				String IRIB = "";
 				String role = "";
-//				p(a);
 				String classType = operands[1].getClassExpressionType().toString();
-//				p(classType);
+				
 				if (classType == "ObjectSomeValuesFrom") {
 					for (OWLClassExpression opp : operands[1].nestedClassExpressions()
 							.toArray(OWLClassExpression[]::new)) {
@@ -154,5 +153,9 @@ class OWLToGraphicEL {
 		p("Graph A: " + G.A());
 
 		return G;
+	}
+	
+	static String OWLToGraphicELJSON(String OWLFile) throws OWLOntologyCreationException {
+		return OWLToGraphicEL.OWLToGraphicELGraph(OWLFile).toString();
 	}
 }
