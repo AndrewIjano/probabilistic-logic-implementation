@@ -132,30 +132,49 @@ public class GraphicELGraph {
 		for (Vertex v : this.adjVertices.keySet()) {
 			if (vertexIndex != 0)
 				s += ",\n";
-			indexes.put(v.IRI, vertexIndex);
-			s += "    {\"" + (vertexIndex++) + "\" : \"" + v.toString() + "\"}";
+			indexes.put(v.IRI, vertexIndex++);
+			s += "    \"" + v.toString() + "\"";
 		}
 		s += "  ],\n";
 		s += "  \"arrows\" : [\n";
 		int roleIndex = 1;
 		Map<String, Integer> roleIndexes = new HashMap<String, Integer>();
 		roleIndexes.put(ISA, 0);
-		boolean isFirst = true;
+		boolean isFirstVertex = true;
 		for (Vertex v : this.adjVertices.keySet()) {
+			if (isFirstVertex)
+				isFirstVertex = false;
+			else
+				s += ",\n";
+			
+			s += "    [\n";
+			boolean isFirstArrow = true;
 			for (Arrow a : this.adjVertices.get(v)) {
-				if (isFirst)
-					isFirst = false;
+				if (isFirstArrow)
+					isFirstArrow = false;
 				else
 					s += ",\n";
 
 				if (roleIndexes.get(a.role()) == null)
 					roleIndexes.put(a.role(), roleIndex++);
-				s += "    { \"" + indexes.get(v.IRI) + "\" :";
-				s += " { \"role\" : " + roleIndexes.get(a.role()) + ",";
-				s += " \"vertex\" : " + indexes.get(a.vertex().IRI) + "}}";
+				s += "      { \"role\" : " + roleIndexes.get(a.role()) + ",";
+				s += " \"vertex\" : " + indexes.get(a.vertex().IRI) + "}";
 			}
+			s += "\n    ]";
 		}
-		s += "  ],\n";
+		s += "\n  ],\n";
+		
+		s += " \"roles\" : [\n";
+		boolean isFirstRole = true;
+		for (String role : roleIndexes.keySet()) {
+			if (isFirstRole)
+				isFirstRole = false;
+			else
+				s += ",\n";
+			
+			s += "    \"" + role + "\"";
+		}
+		s += "],\n";
 		s += "\"V\" : " + this.V + ",\n";
 		s += "\"A\" : " + this.A + ",\n";
 		s += "\"R\" : " + roleIndex + "\n";
