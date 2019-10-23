@@ -116,4 +116,38 @@ public class GraphicELGraph {
 		return this.A;
 	}
 	
+	@Override
+	public String toString() {
+		Map<String, Integer> indexes = new HashMap<String, Integer>();		
+		String s = "";
+		s += "{\n";
+		s += "  \"vertices\" : [\n";
+		int vertexIndex = 0;
+		for (Vertex v : this.adjVertices.keySet()) {
+			indexes.put(v.IRI, vertexIndex);
+			s += "    {" + (vertexIndex++) + " : \"" + v.toString() + "\"},\n"; 
+		}
+		s += "  ],\n";
+		s += "  \"arrows\" : [\n";
+		int roleIndex = 1;
+		Map<String, Integer> roleIndexes = new HashMap<String, Integer>();		
+		roleIndexes.put(ISA, 0);
+		for (Vertex v : this.adjVertices.keySet()) {
+			for (Arrow a : this.adjVertices.get(v)) {
+				if (roleIndexes.get(a.role()) == null)
+					roleIndexes.put(a.role(), roleIndex++);
+				s += "    {" + indexes.get(v.IRI) + " :";
+				s += " { \"role\" : " + roleIndexes.get(a.role()) + ",";
+				s += " \"vertex\" : " + indexes.get(a.vertex().IRI) +  "}";
+				s += "}\n";				
+			}
+		}
+		s += "  ],\n";
+		s += "\"V\" : " + this.V + ",\n";
+		s += "\"A\" : " + this.A + ",\n";
+		s += "\"R\" : " + roleIndex + "\n";
+		s += "}";
+		return s;
+	}
+	
 }
