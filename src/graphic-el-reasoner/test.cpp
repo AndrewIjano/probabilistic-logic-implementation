@@ -1,11 +1,9 @@
 #include <jni.h>
 #include <iostream>
-#include "nlohmann/json.hpp"
-
+#include "gel_graph.h"
 using namespace std;
-using json = nlohmann::json;
 
-string read_ontology(string ontology) {
+string ReadOntology(string ontology) {
     JavaVM *vm;
     JNIEnv *env;
 
@@ -61,10 +59,8 @@ string read_ontology(string ontology) {
 }
 
 int main() {
-    string ont_str = read_ontology("example1.owl");
-
-    json j = json::parse(ont_str);
-    cout << j["V"] << endl;
-
+    string ont_str = ReadOntology("example1.owl");
+    GELGraph G = GELGraph(ont_str);
+    cout << G.iri_list[0] << endl;
     return EXIT_SUCCESS;
 }
