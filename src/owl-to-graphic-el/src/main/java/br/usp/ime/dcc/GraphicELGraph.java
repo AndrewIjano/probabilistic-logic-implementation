@@ -77,15 +77,52 @@ public class GraphicELGraph {
 
 	}
 
+	private class ChainedProperties {
+		private String first;
+		private String second;
+
+		public ChainedProperties(String first, String second) {
+			this.first = first;
+			this.second = second;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (o == null)
+				return false;
+
+			if (this.getClass() != o.getClass())
+				return false;
+
+			ChainedProperties cp = (ChainedProperties) o;
+			return cp.first.equals(this.first) && cp.second.equals(this.second);
+		}
+
+		@Override
+		public int hashCode() {
+			return this.first.hashCode() * this.second.hashCode();
+		}
+
+		@Override
+		public String toString() {
+			return "(" + this.first + ", " + this.second + ")";
+		}
+	}
+
 	private int V;
 	private int A;
 	private Map<Vertex, List<Arrow>> adjVertices;
+	private Map<String, String> subProperties;
+	private Map<ChainedProperties, String> chainedSubProperties;
+
 	private static final String ISA = "ISA";
 
 	public GraphicELGraph() {
 		this.V = 0;
 		this.A = 0;
 		this.adjVertices = new HashMap<Vertex, List<Arrow>>();
+		this.subProperties = new HashMap<String, String>();
+		this.chainedSubProperties = new HashMap<ChainedProperties, String>();
 	}
 
 	public void addVertex(String IRI) {
@@ -112,6 +149,25 @@ public class GraphicELGraph {
 
 	public void addArrowISA(String IRIA, String IRIB) {
 		this.addArrowRole(IRIA, IRIB, ISA);
+	}
+
+	public void addSubPropery(String IRIA, String IRIB) {
+		if (IRIA == null || IRIB == null)
+			throw new NullPointerException();
+
+		if (this.subProperties.get(IRIA) == null || !this.subProperties.get(IRIA).contains(IRIB)) {
+			this.subProperties.put(IRIA, IRIB);
+		}
+	}
+
+	public void addChainedSubProperty(String IRIA, String IRIB, String IRIC) {
+		if (IRIA == null || IRIB == null || IRIC == null)
+			throw new NullPointerException();
+
+		ChainedProperties cp = new ChainedProperties(IRIA, IRIB);
+		if (this.chainedSubProperties.get(cp) == null || !this.chainedSubProperties.get(cp).contains(IRIC)) {
+			this.chainedSubProperties.put(cp, IRIC);
+		}
 	}
 
 	public int V() {
@@ -146,7 +202,7 @@ public class GraphicELGraph {
 				isFirstVertex = false;
 			else
 				s += ",\n";
-			
+
 			s += "    [\n";
 			boolean isFirstArrow = true;
 			for (Arrow a : this.adjVertices.get(v)) {
@@ -163,7 +219,7 @@ public class GraphicELGraph {
 			s += "\n    ]";
 		}
 		s += "\n  ],\n";
-		
+
 		s += " \"roles\" : [\n";
 		boolean isFirstRole = true;
 		for (String role : roleIndexes.keySet()) {
@@ -171,8 +227,8 @@ public class GraphicELGraph {
 				isFirstRole = false;
 			else
 				s += ",\n";
-			
-			s += "    \"" + role + "\"";
+
+			s += "    \"" + role  + ", " + roleIndexes.get(role) + "\"";
 		}
 		s += "],\n";
 		s += "\"V\" : " + this.V + ",\n";
