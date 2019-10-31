@@ -1,0 +1,17 @@
+Fazer MaxFlow/MinCut
+
+C -> inf
+P -> dados
+Inferida -> 0
+
+
+Montar Grafo com pesos
+- Pode ser que exista um caminho do init -> bot
+	- nesse caso > inconsistente
+	- max flow / min cut
+- Pesos negativos
+	- max flow / min cut
+	
+- Nao tem e pesos positivos
+
+
