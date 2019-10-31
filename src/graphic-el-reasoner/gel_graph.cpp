@@ -24,4 +24,21 @@ GELGraph::GELGraph(string ont_str) {
         }
         adj.push_back(adj_arrows);
     }
+
+    for (auto role_inclusion : j["roleInclusions"]) {
+        pair<int, int> ri;
+        ri.first = role_inclusion["first"];
+        ri.second = role_inclusion["second"];
+        role_inclusions.push_back(ri);
+    }
+
+    for (auto chain_role_inclusion : j["chainedRoleInclusions"]) {
+        pair<int, int> chained_role;
+        pair<pair<int, int>, int> cri;
+        chained_role.first = chain_role_inclusion["first"];
+        chained_role.second = chain_role_inclusion["second"];
+        cri.first = chained_role;
+        cri.second = chain_role_inclusion["third"];
+        chained_role_inclusions.push_back(cri);
+    }
 }

@@ -7,6 +7,6 @@ public class Test {
 		return OWLToGraphicEL.OWLToGraphicELGraph("example5.owl").toString();
 	}
 	public static void main(String[] args) throws OWLOntologyCreationException {
-		OWLToGraphicEL.OWLToGraphicELGraph("example5.owl");
+		System.out.println(OWLToGraphicEL.OWLToGraphicELGraph("example5.owl").toString());
 	}
 }

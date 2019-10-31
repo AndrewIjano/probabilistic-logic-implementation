@@ -7,10 +7,10 @@ import java.util.Map;
 
 public class GraphicELGraph {
 	private class Vertex {
-		private String IRI;
-
-		public Vertex(String IRI) {
-			this.IRI = IRI;
+		private Integer index;
+		
+		public Vertex(Integer index) {
+			this.index = index;
 		}
 
 		@Override
@@ -22,27 +22,28 @@ public class GraphicELGraph {
 				return false;
 
 			Vertex v = (Vertex) o;
-			return v.IRI.equals(this.IRI);
+			return v.index == this.index;
 		}
 
 		@Override
 		public int hashCode() {
-			return this.IRI.hashCode();
+			return this.index;
 		}
 
 		@Override
 		public String toString() {
-			return this.IRI;
+			return this.index.toString();
 		}
 	}
 
 	private class Arrow {
 		private Vertex vertex;
-		private String role;
-
-		public Arrow(Vertex vertex, String roleIRI) {
+//		private String role;
+		private Integer role;
+		
+		public Arrow(Vertex vertex, Integer roleIndex) {
 			this.vertex = vertex;
-			this.role = roleIRI;
+			this.role = roleIndex;
 		}
 
 		@Override
@@ -71,17 +72,17 @@ public class GraphicELGraph {
 			return this.vertex;
 		}
 
-		public String role() {
+		public Integer role() {
 			return this.role;
 		}
 
 	}
 
-	private class ChainedProperties {
-		private String first;
-		private String second;
+	private class SubProperty {
+		private Integer first;
+		private Integer second;
 
-		public ChainedProperties(String first, String second) {
+		public SubProperty(Integer first, Integer second) {
 			this.first = first;
 			this.second = second;
 		}
@@ -94,7 +95,7 @@ public class GraphicELGraph {
 			if (this.getClass() != o.getClass())
 				return false;
 
-			ChainedProperties cp = (ChainedProperties) o;
+			SubProperty cp = (SubProperty) o;
 			return cp.first.equals(this.first) && cp.second.equals(this.second);
 		}
 
@@ -108,38 +109,88 @@ public class GraphicELGraph {
 			return "(" + this.first + ", " + this.second + ")";
 		}
 	}
+	
+	private class ChainedSubProperty {
+		private Integer first;
+		private Integer second;
+		private Integer third;
+
+		public ChainedSubProperty(Integer first, Integer second, Integer third) {
+			this.first = first;
+			this.second = second;
+			this.third = third;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (o == null)
+				return false;
+
+			if (this.getClass() != o.getClass())
+				return false;
+
+			ChainedSubProperty cp = (ChainedSubProperty) o;
+			return cp.first.equals(this.first) && cp.second.equals(this.second) && cp.third.equals(this.third);
+		}
+
+		@Override
+		public int hashCode() {
+			return this.first.hashCode() * this.second.hashCode() * this.third.hashCode();
+		}
+
+		@Override
+		public String toString() {
+			return "(" + this.first + ", " + this.second + ", " +  this.third + ")";
+		}
+	}
 
 	private int V;
 	private int A;
 	private Map<Vertex, List<Arrow>> adjVertices;
-	private Map<String, String> subProperties;
-	private Map<ChainedProperties, String> chainedSubProperties;
+	private List<SubProperty> subProperties;
+	private List<ChainedSubProperty> chainedSubProperties;
 
+	private List<String> iriList;
+	private List<String> roleList;
+	
 	private static final String ISA = "ISA";
 
 	public GraphicELGraph() {
 		this.V = 0;
 		this.A = 0;
 		this.adjVertices = new HashMap<Vertex, List<Arrow>>();
-		this.subProperties = new HashMap<String, String>();
-		this.chainedSubProperties = new HashMap<ChainedProperties, String>();
+		this.subProperties = new ArrayList<SubProperty>();
+		this.chainedSubProperties = new ArrayList<ChainedSubProperty>();
+		this.iriList = new ArrayList<String>();
+		this.roleList = new ArrayList<String>();
+		this.roleList.add(ISA);
 	}
 
 	public void addVertex(String IRI) {
 		if (IRI == null)
 			throw new NullPointerException();
 
-		this.adjVertices.put(new Vertex(IRI), new ArrayList<Arrow>());
-		this.V++;
+		if (!iriList.contains(IRI)) {
+			iriList.add(IRI);
+			Integer index = iriList.indexOf(IRI);
+			this.adjVertices.put(new Vertex(index), new ArrayList<Arrow>());
+			this.V++;
+		}
 	}
 
 	public void addArrowRole(String IRIA, String IRIB, String role) {
 		if (IRIA == null || IRIB == null || role == null)
 			throw new NullPointerException();
 
-		Vertex a = new Vertex(IRIA);
-		Vertex b = new Vertex(IRIB);
-		Arrow ab = new Arrow(b, role);
+		Integer indexA = this.iriList.indexOf(IRIA);
+		Integer indexB = this.iriList.indexOf(IRIB);
+		if (!this.roleList.contains(role)) {
+			this.roleList.add(role);
+		}
+		Integer indexR = this.roleList.indexOf(role);
+		Vertex a = new Vertex(indexA);
+		Vertex b = new Vertex(indexB);
+		Arrow ab = new Arrow(b, indexR);
 
 		if (!this.adjVertices.get(a).contains(ab)) {
 			this.adjVertices.get(a).add(ab);
@@ -154,9 +205,17 @@ public class GraphicELGraph {
 	public void addSubPropery(String IRIA, String IRIB) {
 		if (IRIA == null || IRIB == null)
 			throw new NullPointerException();
-
-		if (this.subProperties.get(IRIA) == null || !this.subProperties.get(IRIA).contains(IRIB)) {
-			this.subProperties.put(IRIA, IRIB);
+		
+		if (!this.roleList.contains(IRIA)) 
+			this.roleList.add(IRIA);
+		if (!this.roleList.contains(IRIB))
+			this.roleList.add(IRIB);
+		
+		Integer indexA = this.roleList.indexOf(IRIA);
+		Integer indexB = this.roleList.indexOf(IRIB);
+		SubProperty sb = new SubProperty(indexA, indexB);
+		if (!this.subProperties.contains(sb)) {
+			this.subProperties.add(sb);
 		}
 	}
 
@@ -164,9 +223,20 @@ public class GraphicELGraph {
 		if (IRIA == null || IRIB == null || IRIC == null)
 			throw new NullPointerException();
 
-		ChainedProperties cp = new ChainedProperties(IRIA, IRIB);
-		if (this.chainedSubProperties.get(cp) == null || !this.chainedSubProperties.get(cp).contains(IRIC)) {
-			this.chainedSubProperties.put(cp, IRIC);
+
+		if (!this.roleList.contains(IRIA)) 
+			this.roleList.add(IRIA);
+		if (!this.roleList.contains(IRIB))
+			this.roleList.add(IRIB);
+		if (!this.roleList.contains(IRIC))
+			this.roleList.add(IRIC);
+
+		Integer indexA = this.roleList.indexOf(IRIA);
+		Integer indexB = this.roleList.indexOf(IRIB);
+		Integer indexC = this.roleList.indexOf(IRIC);
+		ChainedSubProperty cp = new ChainedSubProperty(indexA, indexB, indexC);
+		if (!this.chainedSubProperties.contains(cp)) {
+			this.chainedSubProperties.add(cp);
 		}
 	}
 
@@ -180,60 +250,64 @@ public class GraphicELGraph {
 
 	@Override
 	public String toString() {
-		Map<String, Integer> indexes = new HashMap<String, Integer>();
 		String s = "";
 		s += "{\n";
 		s += "  \"vertices\" : [\n";
-		int vertexIndex = 0;
-		for (Vertex v : this.adjVertices.keySet()) {
-			if (vertexIndex != 0)
-				s += ",\n";
-			indexes.put(v.IRI, vertexIndex++);
-			s += "    \"" + v.toString() + "\"";
+		boolean isFirstVertex = true;
+		for (String vertex : this.iriList) {
+			if (isFirstVertex) isFirstVertex = false;
+			else			   s += ",\n";
+			
+			s += "    \"" + vertex + "\"";
+		}
+		s += "  ],\n";
+		s += "  \"roles\" : [\n";
+		boolean isFirstRole = true;
+		for (String role : this.roleList) {
+			if (isFirstRole) isFirstRole = false;
+			else			 s += ",\n";
+			
+			s += "    \"" + role + "\"";
 		}
 		s += "  ],\n";
 		s += "  \"arrows\" : [\n";
-		int roleIndex = 1;
-		Map<String, Integer> roleIndexes = new HashMap<String, Integer>();
-		roleIndexes.put(ISA, 0);
-		boolean isFirstVertex = true;
-		for (Vertex v : this.adjVertices.keySet()) {
-			if (isFirstVertex)
-				isFirstVertex = false;
-			else
-				s += ",\n";
-
+		boolean isFirstArrows = true;
+		for (List<Arrow> arrows : this.adjVertices.values()) {
+			if (isFirstArrows) isFirstArrows = false;
+			else			   s += ",\n";
+			
 			s += "    [\n";
 			boolean isFirstArrow = true;
-			for (Arrow a : this.adjVertices.get(v)) {
-				if (isFirstArrow)
-					isFirstArrow = false;
-				else
-					s += ",\n";
-
-				if (roleIndexes.get(a.role()) == null)
-					roleIndexes.put(a.role(), roleIndex++);
-				s += "      { \"role\" : " + roleIndexes.get(a.role()) + ",";
-				s += " \"vertex\" : " + indexes.get(a.vertex().IRI) + "}";
+			for (Arrow arrow : arrows) {
+				if (isFirstArrow) isFirstArrow = false;
+				else			  s += ",\n";
+				
+				s += "     { \"role\": " + arrow.role +  ", \"vertex\": " + arrow.vertex +   "}";
 			}
 			s += "\n    ]";
+
 		}
 		s += "\n  ],\n";
 
-		s += " \"roles\" : [\n";
-		boolean isFirstRole = true;
-		for (String role : roleIndexes.keySet()) {
-			if (isFirstRole)
-				isFirstRole = false;
-			else
-				s += ",\n";
-
-			s += "    \"" + role  + ", " + roleIndexes.get(role) + "\"";
+		s += "  \"roleInclusions\" : [\n";
+		boolean isFirstRoleInc = true;
+		for (SubProperty sb : this.subProperties) {
+			if (isFirstRoleInc) isFirstRoleInc = false;
+			else			    s += ",\n";
+			
+			s += "    { \"first\": " + sb.first +  ", \"second\": " + sb.second +   "}";			
 		}
-		s += "],\n";
-		s += "\"V\" : " + this.V + ",\n";
-		s += "\"A\" : " + this.A + ",\n";
-		s += "\"R\" : " + roleIndex + "\n";
+		s += "\n  ],\n";
+		
+		s += "  \"chainedRoleInclusions\" : [\n";
+		boolean isFirstChainRoleInc = true;
+		for (ChainedSubProperty csb : this.chainedSubProperties) {
+			if (isFirstChainRoleInc) isFirstChainRoleInc = false;
+			else			         s += ",\n";
+			
+			s += "    { \"first\": " + csb.first +  ", \"second\": " + csb.second +  ", \"third\": " + csb.third + "}";			
+		}
+		s += "\n  ]\n";
 		s += "}";
 		return s;
 	}
