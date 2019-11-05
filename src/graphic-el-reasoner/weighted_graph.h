@@ -1,27 +1,26 @@
 #include <iostream>
 #include <utility>
 #include <vector>
-#include "nlohmann/json.hpp"
+#include "gel_graph.h"
 
-#ifndef GELGRAPH_H
-#define GELGRAPH_H
+#ifndef WEIGHTED_GRAPH_H
+#define WEIGHTED_GRAPH_H
 
-class GELGraph {
+#define INFINITY -1
+class WeightedGraph {
    private:
     struct Arrow {
-        int role;
         int vertex;
-        bool is_derivated;
+        int weight;
     };
 
    public:
     std::vector<std::vector<Arrow>> adj;
-    std::vector<std::string> iri_list;
-    std::vector<std::string> role_list;
     std::vector<std::pair<int, int>> role_inclusions;
     std::vector<std::pair<std::pair<int, int>, int>>
         chained_role_inclusions;
-    GELGraph(std::string ont_str);
+    WeightedGraph(GELGraph G);
+    WeightedGraph(int V);
 };
 
 #endif
