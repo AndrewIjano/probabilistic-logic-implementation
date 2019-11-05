@@ -8,7 +8,7 @@ import java.util.Map;
 public class GraphicELGraph {
 	private class Vertex {
 		private Integer index;
-		
+
 		public Vertex(Integer index) {
 			this.index = index;
 		}
@@ -38,12 +38,19 @@ public class GraphicELGraph {
 
 	private class Arrow {
 		private Vertex vertex;
-//		private String role;
 		private Integer role;
-		
+		private Boolean isDerivated;
+
 		public Arrow(Vertex vertex, Integer roleIndex) {
 			this.vertex = vertex;
 			this.role = roleIndex;
+			this.isDerivated = false;
+		}
+
+		public Arrow(Vertex vertex, Integer roleIndex, Boolean isDerivated) {
+			this.vertex = vertex;
+			this.role = roleIndex;
+			this.isDerivated = isDerivated;
 		}
 
 		@Override
@@ -60,7 +67,7 @@ public class GraphicELGraph {
 
 		@Override
 		public int hashCode() {
-			return this.vertex.hashCode() * this.role.hashCode();
+			return this.vertex.hashCode() * this.role.hashCode() * (1 + this.isDerivated.hashCode());
 		}
 
 		@Override
@@ -109,7 +116,7 @@ public class GraphicELGraph {
 			return "(" + this.first + ", " + this.second + ")";
 		}
 	}
-	
+
 	private class ChainedSubProperty {
 		private Integer first;
 		private Integer second;
@@ -140,7 +147,7 @@ public class GraphicELGraph {
 
 		@Override
 		public String toString() {
-			return "(" + this.first + ", " + this.second + ", " +  this.third + ")";
+			return "(" + this.first + ", " + this.second + ", " + this.third + ")";
 		}
 	}
 
@@ -152,7 +159,7 @@ public class GraphicELGraph {
 
 	private List<String> iriList;
 	private List<String> roleList;
-	
+
 	private static final String ISA = "ISA";
 
 	public GraphicELGraph() {
@@ -178,7 +185,7 @@ public class GraphicELGraph {
 		}
 	}
 
-	public void addArrowRole(String IRIA, String IRIB, String role) {
+	public void addArrowRole(String IRIA, String IRIB, String role, Boolean isDerivated) {
 		if (IRIA == null || IRIB == null || role == null)
 			throw new NullPointerException();
 
@@ -190,12 +197,20 @@ public class GraphicELGraph {
 		Integer indexR = this.roleList.indexOf(role);
 		Vertex a = new Vertex(indexA);
 		Vertex b = new Vertex(indexB);
-		Arrow ab = new Arrow(b, indexR);
+		Arrow ab = new Arrow(b, indexR, isDerivated);
 
 		if (!this.adjVertices.get(a).contains(ab)) {
 			this.adjVertices.get(a).add(ab);
 			A++;
 		}
+	}
+
+	public void addArrowRole(String IRIA, String IRIB, String role) {
+		this.addArrowRole(IRIA, IRIB, role, false);
+	}
+
+	public void addArrowISA(String IRIA, String IRIB, Boolean isDerivated) {
+		this.addArrowRole(IRIA, IRIB, ISA, isDerivated);
 	}
 
 	public void addArrowISA(String IRIA, String IRIB) {
@@ -205,12 +220,12 @@ public class GraphicELGraph {
 	public void addSubPropery(String IRIA, String IRIB) {
 		if (IRIA == null || IRIB == null)
 			throw new NullPointerException();
-		
-		if (!this.roleList.contains(IRIA)) 
+
+		if (!this.roleList.contains(IRIA))
 			this.roleList.add(IRIA);
 		if (!this.roleList.contains(IRIB))
 			this.roleList.add(IRIB);
-		
+
 		Integer indexA = this.roleList.indexOf(IRIA);
 		Integer indexB = this.roleList.indexOf(IRIB);
 		SubProperty sb = new SubProperty(indexA, indexB);
@@ -223,8 +238,7 @@ public class GraphicELGraph {
 		if (IRIA == null || IRIB == null || IRIC == null)
 			throw new NullPointerException();
 
-
-		if (!this.roleList.contains(IRIA)) 
+		if (!this.roleList.contains(IRIA))
 			this.roleList.add(IRIA);
 		if (!this.roleList.contains(IRIB))
 			this.roleList.add(IRIB);
@@ -255,34 +269,43 @@ public class GraphicELGraph {
 		s += "  \"vertices\" : [\n";
 		boolean isFirstVertex = true;
 		for (String vertex : this.iriList) {
-			if (isFirstVertex) isFirstVertex = false;
-			else			   s += ",\n";
-			
+			if (isFirstVertex)
+				isFirstVertex = false;
+			else
+				s += ",\n";
+
 			s += "    \"" + vertex + "\"";
 		}
 		s += "  ],\n";
 		s += "  \"roles\" : [\n";
 		boolean isFirstRole = true;
 		for (String role : this.roleList) {
-			if (isFirstRole) isFirstRole = false;
-			else			 s += ",\n";
-			
+			if (isFirstRole)
+				isFirstRole = false;
+			else
+				s += ",\n";
+
 			s += "    \"" + role + "\"";
 		}
 		s += "  ],\n";
 		s += "  \"arrows\" : [\n";
 		boolean isFirstArrows = true;
 		for (List<Arrow> arrows : this.adjVertices.values()) {
-			if (isFirstArrows) isFirstArrows = false;
-			else			   s += ",\n";
-			
+			if (isFirstArrows)
+				isFirstArrows = false;
+			else
+				s += ",\n";
+
 			s += "    [\n";
 			boolean isFirstArrow = true;
 			for (Arrow arrow : arrows) {
-				if (isFirstArrow) isFirstArrow = false;
-				else			  s += ",\n";
-				
-				s += "     { \"role\": " + arrow.role +  ", \"vertex\": " + arrow.vertex +   "}";
+				if (isFirstArrow)
+					isFirstArrow = false;
+				else
+					s += ",\n";
+
+				s += "     { \"role\": " + arrow.role + ", \"vertex\": " + arrow.vertex + ", \"derivated\": "
+						+ arrow.isDerivated + "}";
 			}
 			s += "\n    ]";
 
@@ -292,20 +315,24 @@ public class GraphicELGraph {
 		s += "  \"roleInclusions\" : [\n";
 		boolean isFirstRoleInc = true;
 		for (SubProperty sb : this.subProperties) {
-			if (isFirstRoleInc) isFirstRoleInc = false;
-			else			    s += ",\n";
-			
-			s += "    { \"first\": " + sb.first +  ", \"second\": " + sb.second +   "}";			
+			if (isFirstRoleInc)
+				isFirstRoleInc = false;
+			else
+				s += ",\n";
+
+			s += "    { \"first\": " + sb.first + ", \"second\": " + sb.second + "}";
 		}
 		s += "\n  ],\n";
-		
+
 		s += "  \"chainedRoleInclusions\" : [\n";
 		boolean isFirstChainRoleInc = true;
 		for (ChainedSubProperty csb : this.chainedSubProperties) {
-			if (isFirstChainRoleInc) isFirstChainRoleInc = false;
-			else			         s += ",\n";
-			
-			s += "    { \"first\": " + csb.first +  ", \"second\": " + csb.second +  ", \"third\": " + csb.third + "}";			
+			if (isFirstChainRoleInc)
+				isFirstChainRoleInc = false;
+			else
+				s += ",\n";
+
+			s += "    { \"first\": " + csb.first + ", \"second\": " + csb.second + ", \"third\": " + csb.third + "}";
 		}
 		s += "\n  ]\n";
 		s += "}";

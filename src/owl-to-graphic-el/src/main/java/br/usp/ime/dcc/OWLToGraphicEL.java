@@ -124,7 +124,7 @@ class OWLToGraphicEL {
 					p("\t" + cleanIRI(role) + "." + cleanIRI(IRIB) + " -> " + cleanIRI(IRIA));
 					G.addVertex(artificialNode);
 					
-					G.addArrowISA(artificialNode, IRIA);
+					G.addArrowISA(artificialNode, IRIA, true);
 				} else if (classType == "Class") {
 					for (OWLClassExpression opp : operands[1].nestedClassExpressions()
 							.toArray(OWLClassExpression[]::new))
