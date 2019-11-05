@@ -1,0 +1,26 @@
+\begin{thebibliography}{1}
+
+\bibitem{JNI}
+Jni.
+\newblock https://docs.oracle.com/javase/8/docs/technotes/guides/jni/.
+
+\bibitem{OWLAPI}
+Site do owl api.
+\newblock http://owlcs.github.io/owlapi/.
+
+\bibitem{Baader2005a}
+Franz Baader, Sebastian Brandt, and Carsten Lutz.
+\newblock Pushing the \text{EL} envelope.
+\newblock In {\em Proceedings of the 19th International Joint Conference on
+  Artificial Intelligence}, IJCAI'05, pages 364--369, 2005.
+
+\bibitem{Fin2019b}
+Marcelo Finger.
+\newblock Extending {EL++} with linear constraints on the probability of
+  axioms.
+\newblock In Carsten Lutz, Uli Sattler, Cesare Tinelli, Anni-Yasmin Turhan, and
+  Frank Wolter, editors, {\em Description Logic, Theory Combination, and All
+  That}, volume LLNCS 11560 of {\em Theoretical Computer Science and General
+  Issues}. Springer International Publishing, 2019.
+
+\end{thebibliography}

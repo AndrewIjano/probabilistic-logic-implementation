@@ -1,0 +1,216 @@
+\documentclass[portrait]{ppgcaposter}
+\usepackage{lmodern} 
+
+\usepackage{mdframed}
+\usepackage{xcolor}
+
+\definecolor{navyblue}{rgb}{0.0, 0.0, 0.5}
+
+% EL
+\newcommand{\el}{\mathcal{EL}} 
+% EL++
+\newcommand{\elpp}{\mathcal{EL}^{++}}
+% GEL++
+\newcommand{\gelpp}{\mathcal{GEL}^{++}}
+% concrete domain D
+\newcommand{\D}{\mathcal{D}}
+% concept names
+\newcommand{\Nc}{\mathsf{N_C}}
+% role names
+\newcommand{\Nr}{\mathsf{N_R}}
+% individual names
+\newcommand{\Ni}{\mathsf{N_I}}
+% interpretation
+\newcommand{\I}{\mathcal{I}}
+
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows, positioning}
+
+\setlength{\parskip}{0em}
+
+\mdfdefinestyle{MyFrame}{%
+    backgroundcolor=navyblue,
+    fontcolor=white,
+    linecolor=navyblue,
+    % outerlinewidth=2pt,
+    %roundcorner=20pt,
+    innertopmargin=30pt,
+    innerbottommargin=30pt,
+    innerrightmargin=4pt,
+    innerleftmargin=4pt,
+        leftmargin = 4pt,
+        rightmargin = 4pt
+}
+
+\DeclareCaptionFont{small}{\small}
+\captionsetup{font=small}
+
+
+\begin{document}
+\fontfamily{lmss}\selectfont
+\renewcommand{\familydefault}{\sfdefault}
+% \printheader
+\renewcommand{\section}[2]{}
+
+\begin{center}
+    %% TITLE
+    \textbf{\bf\veryHuge\color{NavyBlue}\fontfamily{lmss}\selectfont Raciocínio Probabilístico Tratável em um Fragmento da Lógica de Descrição\\[1.5cm]}
+    \Huge \text{MAC0215 - Atividade Curricular em Pesquisa}\\ [0.8cm]
+    %% AUTHORS
+    \huge \textbf{Andrew Ijano Lopes}\\ [0.8cm]
+    \huge Orientador: Marcelo Finger\\ [0.2cm]
+    \huge Instituto de Matemática e Estatística da Universidade de São Paulo
+\end{center}
+
+\vspace{1cm}
+
+\Large
+
+\begin{multicols}{2} % begin two columns
+
+    \color{black}
+
+    % \section*{Introdução}
+
+    \begin{mdframed}[style=MyFrame]
+        \begin{center}
+            \huge  \textbf{Introdução}
+        \end{center}
+    \end{mdframed}
+    \paragraph{}
+    As lógicas de descrição são uma família de linguagens formais para a representação do conhecimento. Dentre as várias propostas existentes, a lógica $\elpp$ se mostrou uma das lógicas de descrição mais expressivas cuja complexidade de inferência é decidível em tempo polinomial.~\cite{Baader2005a} Porém, ao adicionar probabilidade às capacidades de inferência seu problema de decisão se torna NP-Completo.~\cite{Fin2019b}
+    \paragraph{}
+    Com um estudo mais recente, está sendo proposto que, ao restringir a expressividade do $\elpp$, removendo a conjunção, é possível construir uma lógica de descrição probabilística tratável.
+    \paragraph{}
+    Nesse projeto, será usado a linguagem \emph{Graphic} $\elpp$ ($\gelpp$), uma restrição da linguagem $\elpp$, removendo as conjunções.
+    \\
+    \begin{center}
+        \begin{minipage}{0,2\textwidth}
+            \begin{description}
+                \fontsize{28}{28}
+                \selectfont
+                \item Fever $\sqsubseteq$ Symptom
+                \item FeverAndRash $\sqsubseteq$ Fever
+                \item Dengue $\sqsubseteq$ Disease
+                \item Symptom $\sqsubseteq \, \exists$hasCause.Disease
+                \item Patient $\sqsubseteq\, \exists$hasSymptom.Symptom
+                \item hasSymptom $\circ$ hasCause $\sqsubseteq$ suspectOf
+            \end{description}
+        \end{minipage}
+        \hfill \vline
+        \hfill
+        \begin{minipage}{0,2\textwidth}
+            \fontsize{28}{28}
+            \selectfont
+            \begin{description}
+                \item $\{$john$\}$ $\sqsubseteq$ Patient
+                \item $\{$s1$\}$ $\sqsubseteq$ FeverAndRash
+                \item \{john\} $\sqsubseteq \, \exists$hasSymptom.\{s1\}
+                \item DenguePatient $\equiv\, \exists$suspectOf.Dengue
+                      % \item hasSymptom $\circ$ hasSymptom $\sqsubseteq$ suspectOf
+            \end{description}
+        \end{minipage}
+    \end{center}
+    \captionof{figure}{Exemplo da representação de um caso médico com uma ontologia em $\gelpp$.}
+    \vspace{60pt}
+    \begin{mdframed}[style=MyFrame]
+        \begin{center}
+            \huge  \textbf{Objetivos}
+        \end{center}
+    \end{mdframed}
+
+    \paragraph{}
+    O objetivo da pesquisa é realizar estudos sobre diversos conceitos para conseguir propor um algoritmo de satisfatibilidade, estudar sua complexidade e implementar esse algoritmo tratável para um fragmento de uma lógica de descrição probabilística.
+    \paragraph{}
+    Para o escopo dessa disciplina, o projeto abrange a implementação do início do algoritmo sem a inclusão de probabilidades: leitura da ontologia e a resolução do problema de satisfatibilidade máxima ($\gelpp$-\emph{MaxSAT}). Esse algoritmo será aplicado na linguagem $\gelpp$.
+    \\
+    \begin{mdframed}[style=MyFrame]
+        \begin{center}
+            \huge  \textbf{Metodologia}
+        \end{center}
+    \end{mdframed}
+    \paragraph{}
+    Na primeira etapa do projeto, foi implementado a identificação e leitura de uma ontologia na linguagem $\gelpp$, codificada no formato OWL. Esse processo envolve observar se a ontologia se enquadra na expressividade do $\gelpp$ e, em caso afirmativo, analisar cada componente, gerando o grafo correspondente. Para essa etapa, foi utilizada a biblioteca OWL API~\cite{OWLAPI}, em Java.
+    \paragraph{}
+    Em seguida, foi implementado uma interface entre o programa de leitura, em Java, com o algoritmo de satisfatibilidade, em \texttt{C++}, usando a \emph{Java Native Interface} (JNI) ~\cite{JNI}.
+    Além disso, foi implementada a estrutura de dados equivalente ao grafo em Java para armazenar a ontologia e realizar o algoritmo.
+    \paragraph{}
+    Ainda, foi feito o início do algoritmo de cortes mínimos. Um segundo modelo de grafos, apenas com pesos nas arestas, foi implementado e está sendo estudado as aplicações das técnicas de fluxo máximo e corte mínimo no grafo. Disso, a implementação do $\gelpp$-\emph{MaxSATSolver}, algoritmo que resolve o problema de satisfatibilidade máxima, é facilmente produzida.
+    \columnbreak
+    \begin{mdframed}[style=MyFrame]
+        \begin{center}
+            \huge  \textbf{Discussões\vphantom{ç}}
+        \end{center}
+    \end{mdframed}
+
+    \paragraph{}
+    \tikzstyle{block} = [draw, rectangle, rounded corners=.55cm, fill=black!20, draw=white]
+    \tikzstyle{dashblock} = [draw, rectangle, dashed, rounded corners=.55cm, fill=black!10, draw=black!30, line width=5pt]
+
+    \tikzstyle{arrow} = [>=to, line width=3pt]
+    \begin{center}
+        \begin{tikzpicture}[auto, node distance=2cm, ->, >=latex]
+            \node (init) {Init};
+            \node [below=of init] (s1) {$\{$s1$\}$};
+            \node [below=of s1] (john) {$\{$john$\}$};
+
+            \node [block, right=of s1] (fevrash) {FeverAndRash};
+            \node [block, right=of fevrash] (fever) {Fever};
+            \node [block, right=of john] (patient) {Patient};
+            \node [block, above=of fever] (dengue) {Dengue};
+            \node [block, above=of dengue] (denguepat) {DenguePatient};
+            \node [block, right=of dengue] (disease) {Disease};
+            \node [block, right=of fever] (symptom) {Symptom};
+            \node [dashblock, left=of denguepat] (suspofden) {$"$suspectOfDengue$"$};
+            \node [red, left=of dengue] (bot) {$\bot$};
+
+            \path [arrow]
+            (init) edge (s1)
+            (init) edge[bend right = 50] (john)
+            (s1) edge (fevrash)
+            (john) edge (patient)
+            (dengue) edge (disease)
+            (fevrash) edge (fever)
+            (fever) edge (symptom)
+            (suspofden) edge (denguepat)
+            ;
+
+            \path [arrow, dotted, blue]
+            (john) edge node [right] {hasSymptom} (s1)
+            (patient) edge [bend right = 20] node [midway, below] {hasSymptom} (symptom)
+            (denguepat) edge node [right] {suspectOf} (dengue)
+            (symptom) edge node [right] {hasCause} (disease)
+            ;
+
+            \path [arrow, dotted, red]
+            (fevrash) edge node [left] {hasCause} (dengue)
+            (fever) edge node [right] {hasCause} (dengue)
+            ;
+
+            \path [arrow, red]
+            (dengue) edge (bot)
+            ;
+
+        \end{tikzpicture}
+        \captionof{figure}{Exemplo da representação de uma ontologia em $\gelpp$ em grafo. Arcos contínuos correspondem à subsunção e os rótulos de arcos pontilhados são propriedades. Numa implementação com probabilidades, os arcos vermelhos indicam que o arco tem probabilidade.}
+    \end{center}
+
+    \paragraph{}
+    Como citado nos objetivos do projeto, essa pesquisa aplicou métodos para leitura de ontologias em $\gelpp$, implementou estruturas de dados para armazenar ontologias dessa família de linguagens e resolver problemas de corte mínimo em grafos com pesos. Dentre os objetivos previstos, a resolução do problema de $\gelpp$-\emph{MaxSAT} ainda está em andamento e está sendo implementada junto com o problema de corte mínimo.
+    \paragraph{}
+    Durante o desenvolvimento do projeto, foi despendido um tempo muito maior que o esperado na etapa de leitura da linguagem. Uma das maiores problemáticas dessa parte foi a falta de documentação atualizada sobre a OWL API, aumentando o tempo de aprendizagem no uso da biblioteca.
+    \paragraph{}
+    Para fora do escopo da disciplina, o projeto ainda visa o estudo da representação de probabilidades em lógicas de descrição e a implementação de um algoritmo de satisfatibilidade para o $\gelpp$ probabilístico utilizando o $\gelpp$-\emph{MaxSATSolver}.
+    \\
+    \\
+    \begin{mdframed}[style=MyFrame]
+        \begin{center}
+            \huge  \textbf{Referências\vphantom{ç}}
+        \end{center}
+    \end{mdframed}
+    \bibliographystyle{plain} % Plain referencing style
+    \paragraph*{}
+    \bibliography{refs}
+    % \includegraphics[width=0.25\linewidth]{ime-logo.svg.png}
+\end{multicols}
+\end{document}
