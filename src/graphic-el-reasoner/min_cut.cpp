@@ -1,7 +1,10 @@
 #include <limits.h>
 #include <string.h>
+#include <algorithm>
 #include <iostream>
 #include <queue>
+#include <set>
+
 #include "weighted_graph.h"
 
 using namespace std;
@@ -28,7 +31,6 @@ bool bfs(WeightedGraph rG, int s, int t, int parent[]) {
             }
         }
     }
-    cout << visited[t] << endl;
     return visited[t];
 }
 
@@ -39,7 +41,7 @@ void dfs(WeightedGraph rG, int s, bool visited[]) {
             dfs(rG, a.vertex, visited);
 }
 
-void minCut(WeightedGraph G, int s, int t) {
+set<WeightedArrow> minCut(WeightedGraph G, int s, int t) {
     WeightedGraph rG = G;
     int parent[rG.order()];
 
@@ -61,12 +63,16 @@ void minCut(WeightedGraph G, int s, int t) {
     memset(visited, false, sizeof(visited));
     dfs(rG, s, visited);
 
-    for (int i = 0; i < rG.order(); i++) cout << visited[i] << endl;
-
+    set<WeightedArrow> cut_set;
     for (int v = 0; v < G.order(); v++)
         for (auto a : G.adj[v])
-            if (visited[v] && !visited[a.vertex])
-                cout << v << " - " << a.vertex << endl;
+            if (visited[v] && !visited[a.vertex]) {
+                WeightedArrow arrow =
+                    WeightedArrow(v, a.vertex, a.weight);
+                cut_set.insert(arrow);
+            }
+
+    return cut_set;
 }
 
 /*
@@ -88,7 +94,16 @@ int main() {
     G.addArrow(3, 1, 1);
     G.addArrow(4, 1, 2);
 
-    minCut(G, 0, 1);
+    set<WeightedArrow> cut_set = minCut(G, 0, 1);
+    set<WeightedArrow> arrow_set = G.arrowSet();
+    set<WeightedArrow> result;
+
+    set_difference(arrow_set.begin(), arrow_set.end(), cut_set.begin(),
+                   cut_set.end(), inserter(result, result.end()));
+
+    for (auto a : result)
+        cout << a.vertex1 << " - (" << a.weight << ") -> " << a.vertex2
+             << endl;
 
     return 0;
 }

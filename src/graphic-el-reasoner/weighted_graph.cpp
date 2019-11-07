@@ -2,11 +2,30 @@
 
 using namespace std;
 
+WeightedArrow::WeightedArrow(int v1, int v2, int w) {
+    vertex1 = v1;
+    vertex2 = v2;
+    weight = w;
+}
+
+bool operator < (WeightedArrow a1, WeightedArrow a2) {
+    if (a1.vertex1 < a2.vertex1) return true;
+        if (a1.vertex1 > a2.vertex1) return false;
+
+        if (a1.vertex2 < a2.vertex2) return true;
+        if (a1.vertex2 > a2.vertex2) return false;
+
+        if (a1.weight < a2.weight) return true;
+        if (a1.weight > a2.weight) return false;
+
+        return false;
+}
+
 WeightedGraph::WeightedGraph(GELGraph G) {
     for (auto arrows : G.adj) {
-        vector<Arrow> adj_arrows;
+        vector<Node> adj_arrows;
         for (auto arrow : arrows) {
-            Arrow a;
+            Node a;
             a.vertex = arrow.vertex;
             if (arrow.is_derivated)
                 a.weight = 0;
@@ -23,7 +42,7 @@ WeightedGraph::WeightedGraph(GELGraph G) {
 
 WeightedGraph::WeightedGraph(int V) {
     for (int i = 0; i < V; i++) {
-        vector<Arrow> adj_arrows;
+        vector<Node> adj_arrows;
         adj.push_back(adj_arrows);
     }
 }
@@ -33,15 +52,15 @@ void WeightedGraph::addArrow(int vertex1, int vertex2, int weight) {
         WeightedGraph::addArrow(vertex2, vertex1, weight * (-1));
         return;
     }
-    
+
     for (int i = 0; i < adj.at(vertex1).size(); i++) {
         if (adj.at(vertex1).at(i).vertex == vertex2) {
             adj.at(vertex1).at(i).weight = weight;
             return;
         }
     }
-    
-    Arrow a;
+
+    Node a;
     a.vertex = vertex2;
     a.weight = weight;
     adj.at(vertex1).push_back(a);
@@ -54,3 +73,13 @@ int WeightedGraph::getWeight(int vertex1, int vertex2) {
 }
 
 int WeightedGraph::order() { return adj.size(); }
+
+set<WeightedArrow> WeightedGraph::arrowSet() {
+    set<WeightedArrow> edge_set;
+    for (int v = 0; v < adj.size(); v++)
+        for (auto a : adj.at(v)) {
+            WeightedArrow arrow = WeightedArrow(v, a.vertex, a.weight);
+            edge_set.insert(arrow);
+        }
+    return edge_set;
+}
