@@ -1,12 +1,13 @@
 #include <iostream>
 #include <utility>
 #include <vector>
+#include <climits>
 #include "gel_graph.h"
 
 #ifndef WEIGHTED_GRAPH_H
 #define WEIGHTED_GRAPH_H
 
-#define INFINITY -1
+#define INF INT_MAX
 class WeightedGraph {
    private:
     struct Arrow {
@@ -21,6 +22,9 @@ class WeightedGraph {
         chained_role_inclusions;
     WeightedGraph(GELGraph G);
     WeightedGraph(int V);
+    void addArrow(int vertex1, int vertex2, int weight);
+    int getWeight(int vertex1, int vertex2);
+    int order();
 };
 
 #endif
