@@ -8,17 +8,17 @@ WeightedArrow::WeightedArrow(int v1, int v2, int w) {
     weight = w;
 }
 
-bool operator < (WeightedArrow a1, WeightedArrow a2) {
+bool operator<(WeightedArrow a1, WeightedArrow a2) {
     if (a1.vertex1 < a2.vertex1) return true;
-        if (a1.vertex1 > a2.vertex1) return false;
+    if (a1.vertex1 > a2.vertex1) return false;
 
-        if (a1.vertex2 < a2.vertex2) return true;
-        if (a1.vertex2 > a2.vertex2) return false;
+    if (a1.vertex2 < a2.vertex2) return true;
+    if (a1.vertex2 > a2.vertex2) return false;
 
-        if (a1.weight < a2.weight) return true;
-        if (a1.weight > a2.weight) return false;
+    if (a1.weight < a2.weight) return true;
+    if (a1.weight > a2.weight) return false;
 
-        return false;
+    return false;
 }
 
 WeightedGraph::WeightedGraph(GELGraph G) {
@@ -49,7 +49,8 @@ WeightedGraph::WeightedGraph(int V) {
 
 void WeightedGraph::addArrow(int vertex1, int vertex2, int weight) {
     if (weight < 0) {
-        WeightedGraph::addArrow(vertex2, vertex1, weight * (-1));
+        negative_weight_arrows.insert(
+            WeightedArrow(vertex1, vertex2, weight));
         return;
     }
 

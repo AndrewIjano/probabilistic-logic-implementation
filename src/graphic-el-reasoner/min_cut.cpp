@@ -77,10 +77,10 @@ set<WeightedArrow> minCut(WeightedGraph G, int s, int t) {
 
 /*
      0
-  1 / \ 0
+INF / \ INF
    v  v
    2  3
-INF|  | 1
+-2 |  | 1
    v  v
    4->1
     2
@@ -90,7 +90,7 @@ int main() {
 
     G.addArrow(0, 2, INF);
     G.addArrow(0, 3, INF);
-    G.addArrow(2, 4, 2);
+    G.addArrow(2, 4, -2);
     G.addArrow(3, 1, 1);
     G.addArrow(4, 1, 2);
 

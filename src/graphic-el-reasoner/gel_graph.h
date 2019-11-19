@@ -22,6 +22,8 @@ class GELGraph {
     std::vector<std::pair<std::pair<int, int>, int>>
         chained_role_inclusions;
     GELGraph(std::string ont_str);
+    int init;
+    int bottom;
 };
 
 #endif

@@ -42,4 +42,6 @@ GELGraph::GELGraph(string ont_str) {
         cri.second = chain_role_inclusion["third"];
         chained_role_inclusions.push_back(cri);
     }
+
+    init = 0;
 }

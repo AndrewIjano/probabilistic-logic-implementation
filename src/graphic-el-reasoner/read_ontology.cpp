@@ -62,8 +62,10 @@ int main() {
     string ont_str = ReadOntology("example5.owl");
 
     GELGraph G = GELGraph(ont_str);
-    
+
     cout << G.iri_list[0] << endl;
-    cout << G.adj[0][0].vertex << " " << G.adj[0][0].is_derivated << endl;
+    cout << G.adj[0][0].vertex << " " << G.adj[0][0].is_derivated
+         << endl;
+         
     return EXIT_SUCCESS;
 }
