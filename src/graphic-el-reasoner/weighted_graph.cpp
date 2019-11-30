@@ -21,7 +21,7 @@ bool operator<(WeightedArrow a1, WeightedArrow a2) {
     return false;
 }
 
-WeightedGraph::WeightedGraph(GELGraph G) {
+WeightedGraph::WeightedGraph(GELGraph G, vector<int> weights) {
     for (auto arrows : G.adj) {
         vector<Node> adj_arrows;
         for (auto arrow : arrows) {
@@ -29,6 +29,9 @@ WeightedGraph::WeightedGraph(GELGraph G) {
             a.vertex = arrow.vertex;
             if (arrow.is_derivated)
                 a.weight = 0;
+            else if (arrow.p_axiom_index >= 0 &&
+                     weights[arrow.p_axiom_index] >= 0)
+                a.weight = weights[arrow.p_axiom_index];
             else
                 a.weight = INF;
             adj_arrows.push_back(a);

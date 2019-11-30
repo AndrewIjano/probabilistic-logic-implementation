@@ -21,6 +21,7 @@ GELGraph::GELGraph(string ont_str) {
             a.role = arrow["role"];
             a.vertex = arrow["vertex"];
             a.is_derivated = arrow["derivated"];
+            a.p_axiom_index = -1;
             adj_arrows.push_back(a);
         }
         adj.push_back(adj_arrows);

@@ -75,6 +75,23 @@ set<WeightedArrow> minCut(WeightedGraph G, int s, int t) {
     return cut_set;
 }
 
+static int cutMaxWeight(set<WeightedArrow> cut) {
+    int max_weight = 0;
+    for (WeightedArrow a : cut) max_weight = max(max_weight, a.weight);
+    return max_weight;
+}
+
+bool gelMaxSat(GELGraph graph, vector<int> weights,
+               set<WeightedArrow> &cut) {
+    WeightedGraph graph_w = WeightedGraph(graph, weights);
+    cut = minCut(graph_w, graph.init, graph.bottom);
+
+    if (cutMaxWeight(cut) == INF)
+        return false;
+    else
+        return true;
+}
+
 /*
      0
 INF / \ INF
@@ -85,25 +102,25 @@ INF / \ INF
    4->1
     2
 */
-int main() {
-    WeightedGraph G = WeightedGraph(5);
+// int main() {
+//     WeightedGraph G = WeightedGraph(5);
 
-    G.addArrow(0, 2, INF);
-    G.addArrow(0, 3, INF);
-    G.addArrow(2, 4, -2);
-    G.addArrow(3, 1, 1);
-    G.addArrow(4, 1, 2);
+//     G.addArrow(0, 2, INF);
+//     G.addArrow(0, 3, INF);
+//     G.addArrow(2, 4, -2);
+//     G.addArrow(3, 1, 1);
+//     G.addArrow(4, 1, 2);
 
-    set<WeightedArrow> cut_set = minCut(G, 0, 1);
-    set<WeightedArrow> arrow_set = G.arrowSet();
-    set<WeightedArrow> result;
+//     set<WeightedArrow> cut_set = minCut(G, 0, 1);
+//     set<WeightedArrow> arrow_set = G.arrowSet();
+//     set<WeightedArrow> result;
 
-    set_difference(arrow_set.begin(), arrow_set.end(), cut_set.begin(),
-                   cut_set.end(), inserter(result, result.end()));
+//     set_difference(arrow_set.begin(), arrow_set.end(), cut_set.begin(),
+//                    cut_set.end(), inserter(result, result.end()));
 
-    for (auto a : result)
-        cout << a.vertex1 << " - (" << a.weight << ") -> " << a.vertex2
-             << endl;
+//     for (auto a : result)
+//         cout << a.vertex1 << " - (" << a.weight << ") -> " << a.vertex2
+//              << endl;
 
-    return 0;
-}
+//     return 0;
+// }

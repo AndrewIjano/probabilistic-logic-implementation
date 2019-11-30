@@ -2,30 +2,29 @@ package br.usp.ime.dcc;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.Collections;
+import java.util.Stack;
+
+import javax.annotation.Nonnull;
 
 import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassAssertionAxiom;
-import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLEquivalentClassesAxiom;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLObjectPropertyAssertionAxiom;
+import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 import org.semanticweb.owlapi.model.parameters.Imports;
 import org.semanticweb.owlapi.profiles.OWLProfileReport;
-import org.semanticweb.owlapi.util.OWLAPIStreamUtils.Pair;
+import org.semanticweb.owlapi.util.OWLOntologyWalker;
+import org.semanticweb.owlapi.util.OWLOntologyWalkerVisitor;
 
-
-import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
-import uk.ac.manchester.cs.owl.owlapi.OWLEquivalentClassesAxiomImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLObjectPropertyImpl;
 
 class OWLToGraphicEL {
@@ -34,23 +33,15 @@ class OWLToGraphicEL {
 		System.out.println(o);
 	}
 
+	private static void p0(Object o) {
+		System.out.print(o);
+	}
+
 	private static String cleanIRI(Object IRI) {
 		String sIRI = IRI.toString();
 		return sIRI.toString().replaceFirst(".*#", "").replace(">", "");
 	}
 
-	private static class ChainedRoles {
-		public Integer A;
-		public Integer B;
-		public Integer C;
-		
-		public ChainedRoles(Integer A, Integer B, Integer C) {
-			this.A = A;
-			this.B = B;
-			this.C = C;
-		}
-	}
-	
 	static GraphicELGraph OWLToGraphicELGraph(String OWLFile) throws OWLOntologyCreationException {
 		File ontologyFile = new File(OWLFile);
 		OWLOntologyManager man = OWLManager.createOWLOntologyManager();
@@ -58,132 +49,166 @@ class OWLToGraphicEL {
 
 		OWL2GraphicELProfile GELProfile = new OWL2GraphicELProfile();
 		OWLProfileReport report = GELProfile.checkOntology(o);
-		if (!report.isInProfile()) throw new IllegalArgumentException();
-		
+		if (!report.isInProfile())
+			throw new IllegalArgumentException();
+
 		GraphicELGraph G = new GraphicELGraph();
-
-		p("Map IRIs");
-//		Get Classes
-
+		G.addVertex("INIT");
+		G.addVertex("http://www.w3.org/2002/07/owl#Nothing");
+		
 		p("vertices:");
-		o.classesInSignature().forEach((c) -> {
+		o.classesInSignature().forEach(c -> {
 			p("\t" + cleanIRI(c));
 			G.addVertex(c.getIRI().toString());
 		});
-		
-		o.individualsInSignature().forEach((i) -> {
+
+		o.individualsInSignature().forEach(i -> {
 			p("\t" + cleanIRI(i));
 			String individualIRI = i.getIRI().toString();
 			G.addVertex(individualIRI);
+			G.addArrowInit(individualIRI);
 		});
-				
-		
-		p("\n");
 
-		
-		p("----");
-		
-		for (OWLClass c1 : o.classesInSignature().toArray(OWLClass[]::new)) {
-			for (OWLAxiom a : o.subClassAxiomsForSuperClass(c1).toArray(OWLAxiom[]::new)) {
-				OWLClassImpl c2 = (OWLClassImpl) a.components().toArray(Object[]::new)[0];
+		OWLOntologyWalker walker = new OWLOntologyWalker(Collections.singleton(o));
+		OWLOntologyWalkerVisitor visitor = new OWLOntologyWalkerVisitor(walker) {
+			@Nonnull
+			private final Stack<String> operations = new Stack<String>();
 
-				p(cleanIRI(c1) + " -> " + cleanIRI(c2));
-				
-				G.addArrowISA(c1.getIRI().toString(), c2.getIRI().toString());
+			private void insertArrows() {
+				insertArrows(false);
 			}
+			
+			private void insertArrowsEquivalent() {
+				insertArrows(true);
+			}
+			
+			private void insertArrows(boolean isEquivalent) {
+				String IRIA = operations.pop();
+				String propertyIRI = "";
+				String artificialNodeIRI = "";
+				int type = 0;
+				p0("\t" + cleanIRI(IRIA) + " ");
+				if (operations.peek().equals("PROPERTY")) {
+					operations.pop();
+					propertyIRI = operations.pop();
+					artificialNodeIRI = propertyIRI + "." + IRIA;
+					G.addVertex(artificialNodeIRI);
+					p0("(" + cleanIRI(propertyIRI) + ")");
+					type = 1;
+				}
 
-			for (OWLEquivalentClassesAxiomImpl a : o.equivalentClassesAxioms(c1)
-					.toArray(OWLEquivalentClassesAxiomImpl[]::new)) {
+				if (isEquivalent)
+					p0("<->");
+				else
+					p0("->");
 
-				OWLClassExpression[] operands = a.operands().toArray(OWLClassExpression[]::new);
+				String IRIB = operations.pop();
+				if (!operations.isEmpty() && operations.peek().equals("PROPERTY")) {
+					operations.pop();
+					propertyIRI = operations.pop();
+					p0("(" + cleanIRI(propertyIRI) + ")");
+					artificialNodeIRI = propertyIRI + "." + IRIB;
+					G.addVertex(artificialNodeIRI);
+					type = 2;
+				}
+				p(" " + cleanIRI(IRIB));
 
-				String IRIA = operands[0].asOWLClass().getIRI().toString();
+				if (!operations.isEmpty())
+					throw new IllegalArgumentException();
 
-
-				p("Equivalent:");
-				String IRIB = "";
-				String role = "";
-				String classType = operands[1].getClassExpressionType().toString();
-				
-				if (classType == "ObjectSomeValuesFrom") {
-					for (OWLClassExpression opp : operands[1].nestedClassExpressions()
-							.toArray(OWLClassExpression[]::new)) {
-						if (opp.isOWLClass()) {
-							IRIB = opp.asOWLClass().getIRI().toString();
-						}
-					}
-
-					OWLObjectProperty prop = operands[1].objectPropertiesInSignature()
-							.toArray(OWLObjectProperty[]::new)[0];
-					role = prop.getIRI().toString();
-
-					p("\t" + cleanIRI(IRIA) + " (->, " + cleanIRI(role) + ") " + cleanIRI(IRIB));
-					G.addArrowRole(IRIA, IRIB, role);
-					
-					String artificialNode = role + "." + IRIB;
-					p("\t" + cleanIRI(role) + "." + cleanIRI(IRIB) + " -> " + cleanIRI(IRIA));
-					G.addVertex(artificialNode);
-					
-					G.addArrowISA(artificialNode, IRIA, true);
-				} else if (classType == "Class") {
-					for (OWLClassExpression opp : operands[1].nestedClassExpressions()
-							.toArray(OWLClassExpression[]::new))
-						if (opp.isOWLClass())
-							IRIB = opp.asOWLClass().getIRI().toString();
-					
-					p("\t " + cleanIRI(IRIA) + " -> " + cleanIRI(IRIB));
+				if (type == 0)
 					G.addArrowISA(IRIA, IRIB);
-
-					p("\t " + cleanIRI(IRIB) + " -> " + cleanIRI(IRIA));
+				if (type == 0 && isEquivalent)
 					G.addArrowISA(IRIB, IRIA);
 
-				} else
-					throw new UnsupportedOperationException();
-			}
-		}
-
-		p("Individuals:");
-		for (OWLNamedIndividual i : o.individualsInSignature().toArray(OWLNamedIndividual[]::new)) {
-			String individualIRI = i.getIRI().toString();
-			for (OWLClassAssertionAxiom ca : o.classAssertionAxioms(i).toArray(OWLClassAssertionAxiom[]::new)) {
-				if (ca.getClassExpression().isOWLClass()) {
-					String classIRI = ((OWLClass) ca.getClassExpression()).getIRI().toString();
-					p("\t " + cleanIRI(individualIRI) + " -> " + cleanIRI(classIRI));
-					
-					G.addArrowISA(individualIRI, classIRI);
-				} else
-					throw new UnsupportedOperationException();
-
+				if (type == 1)
+					G.addArrowRole(artificialNodeIRI, IRIB, propertyIRI);			
+				if (type == 1 && isEquivalent)
+					G.addArrowRole(IRIB, IRIA, propertyIRI);
+	
+				if (type == 2)
+					G.addArrowRole(IRIA, IRIB, propertyIRI);
+				if (type == 2 && isEquivalent)
+					G.addArrowRole(artificialNodeIRI, IRIA, propertyIRI);
+	
 			}
 
-			for (OWLObjectPropertyAssertionAxiom pa : o.objectPropertyAssertionAxioms(i)
-					.toArray(OWLObjectPropertyAssertionAxiom[]::new)) {
-				String subjectIRI = pa.getSubject().asOWLNamedIndividual().getIRI().toString();
-				String propertyIRI = pa.getProperty().getNamedProperty().getIRI().toString();
-				String objectIRI = pa.getObject().asOWLNamedIndividual().getIRI().toString();
-				
-				p("\t" + cleanIRI(subjectIRI) + " ( ->, " + cleanIRI(propertyIRI) + ") " + cleanIRI(objectIRI));
-				G.addArrowRole(subjectIRI, objectIRI, propertyIRI);
+			@Override
+			public void visit(OWLOntology o) {
+				o.axioms().forEach(a -> a.accept(this));
 			}
 
-		}
+			@Override
+			public void visit(OWLSubClassOfAxiom a) {
+				a.getSuperClass().accept(this);
+				a.getSubClass().accept(this);
+				insertArrows();
+			}
 
-		List<Pair<Integer>> subRoles = new ArrayList<Pair<Integer>>();
-		List<ChainedRoles> subChainRoles = new ArrayList<ChainedRoles>();
-		
+			@Override
+			public void visit(OWLEquivalentClassesAxiom a) {
+				a.operands().forEach(op -> op.accept(this));
+				insertArrowsEquivalent();
+			}
+
+			@Override
+			public void visit(OWLClass ce) {
+				operations.push(ce.getIRI().toString());
+			}
+			
+			public void visit(OWLNamedIndividual ce) {
+				operations.push(ce.getIRI().toString());
+			}
+
+			@Override
+			public void visit(OWLObjectSomeValuesFrom ce) {
+				ce.objectPropertiesInSignature().forEach(op -> operations.push(op.getIRI().toString()));
+				operations.push("PROPERTY");
+				ce.classesInSignature().forEach(cl -> operations.push(cl.getIRI().toString()));
+			}
+			
+			@Override
+			public void visit(OWLClassAssertionAxiom ce) {
+				ce.getClassExpression().accept(this);
+				ce.getIndividual().accept(this);
+				insertArrows();
+			}
+			
+			@Override
+			public void visit(OWLObjectPropertyAssertionAxiom ce) {
+				ce.getProperty().accept(this);
+				ce.getObject().accept(this);
+				ce.getSubject().accept(this);
+				insertArrows();
+			}
+			
+			public void visit(OWLObjectProperty ce) {
+				operations.push(ce.getIRI().toString());
+				operations.push("PROPERTY");
+			}
+
+		};
+
+		p("axioms:");
+		o.accept(visitor);
+
+
+		p("subproperties:");
 		for (OWLAxiom a : o.getRBoxAxioms(Imports.INCLUDED)) {
 			String IRIA = "";
 			String IRIB = "";
 			String IRIC = "";
-			
+
 			for (Object ob : a.componentsWithoutAnnotations().toArray(Object[]::new)) {
 				try {
 					OWLObjectPropertyImpl opi = (OWLObjectPropertyImpl) ob;
-					if (IRIA == null || IRIA.isEmpty()) IRIA = opi.getIRI().toString();
-					else if (IRIB == null || IRIB.isEmpty()) IRIB = opi.getIRI().toString();
-					else IRIC = opi.getIRI().toString();					
-				} 
-				catch (Exception e) {
+					if (IRIA == null || IRIA.isEmpty())
+						IRIA = opi.getIRI().toString();
+					else if (IRIB == null || IRIB.isEmpty())
+						IRIB = opi.getIRI().toString();
+					else
+						IRIC = opi.getIRI().toString();
+				} catch (Exception e) {
 					try {
 						ArrayList al = (ArrayList) ob;
 						OWLObjectPropertyImpl op1 = (OWLObjectPropertyImpl) al.get(0);
@@ -193,25 +218,21 @@ class OWLToGraphicEL {
 					} catch (Exception e2) {
 					}
 				}
-				
+
 			}
-			
+
 			if (IRIC == null || IRIC.isEmpty()) {
-				p(IRIA + " -> " + IRIB);
+				p("\t" + cleanIRI(IRIA) + " -> " + cleanIRI(IRIB));
 				G.addSubPropery(IRIA, IRIB);
-			}
-			else {
-				p(IRIA + " o " + IRIB + " -> " + IRIC);
-				G.addChainedSubProperty(IRIA, IRIB, IRIC);	
+			} else {
+				p("\t" + cleanIRI(IRIA) + " o " + cleanIRI(IRIB) + " -> " + cleanIRI(IRIC));
+				G.addChainedSubProperty(IRIA, IRIB, IRIC);
 			}
 		}
 		
-		p("Graph V: " + G.V());
-		p("Graph A: " + G.A());
-		p(G.toString());
 		return G;
 	}
-	
+
 	static String OWLToGraphicELJSON(String OWLFile) throws OWLOntologyCreationException {
 		return OWLToGraphicEL.OWLToGraphicELGraph(OWLFile).toString();
 	}

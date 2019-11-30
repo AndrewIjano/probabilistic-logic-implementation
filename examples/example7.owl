@@ -1,0 +1,160 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.semanticweb.org/andrew/ontologies/2019/10/untitled-ontology-23#"
+     xml:base="http://www.semanticweb.org/andrew/ontologies/2019/10/untitled-ontology-23"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:untitled-ontology-23="http://www.semanticweb.org/andrew/ontologies/2019/10/untitled-ontology-23#">
+    <owl:Ontology rdf:about="http://www.semanticweb.org/andrew/ontologies/2019/10/untitled-ontology-23"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.semanticweb.org/andrew/ontologies/2019/10/untitled-ontology-23#hasCause -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/andrew/ontologies/2019/10/untitled-ontology-23#hasCause"/>
+    
+
+
+    <!-- http://www.semanticweb.org/andrew/ontologies/2019/10/untitled-ontology-23#hasSymptom -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/andrew/ontologies/2019/10/untitled-ontology-23#hasSymptom"/>
+    
+
+
+    <!-- http://www.semanticweb.org/andrew/ontologies/2019/10/untitled-ontology-23#suspectOf -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/andrew/ontologies/2019/10/untitled-ontology-23#suspectOf">
+        <owl:propertyChainAxiom rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://www.semanticweb.org/andrew/ontologies/2019/10/untitled-ontology-23#hasSymptom"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/andrew/ontologies/2019/10/untitled-ontology-23#hasCause"/>
+        </owl:propertyChainAxiom>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.semanticweb.org/andrew/ontologies/2019/10/untitled-ontology-23#Dengue -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/andrew/ontologies/2019/10/untitled-ontology-23#Dengue">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/andrew/ontologies/2019/10/untitled-ontology-23#Disease"/>
+        <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Nothing"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/andrew/ontologies/2019/10/untitled-ontology-23#DenguePatient -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/andrew/ontologies/2019/10/untitled-ontology-23#DenguePatient">
+        <owl:equivalentClass>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/andrew/ontologies/2019/10/untitled-ontology-23#suspectOf"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/andrew/ontologies/2019/10/untitled-ontology-23#Dengue"/>
+            </owl:Restriction>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/andrew/ontologies/2019/10/untitled-ontology-23#Patient"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/andrew/ontologies/2019/10/untitled-ontology-23#Disease -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/andrew/ontologies/2019/10/untitled-ontology-23#Disease"/>
+    
+
+
+    <!-- http://www.semanticweb.org/andrew/ontologies/2019/10/untitled-ontology-23#Fever -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/andrew/ontologies/2019/10/untitled-ontology-23#Fever">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/andrew/ontologies/2019/10/untitled-ontology-23#Symptom"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/andrew/ontologies/2019/10/untitled-ontology-23#FeverAndRash -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/andrew/ontologies/2019/10/untitled-ontology-23#FeverAndRash">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/andrew/ontologies/2019/10/untitled-ontology-23#Fever"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/andrew/ontologies/2019/10/untitled-ontology-23#Patient -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/andrew/ontologies/2019/10/untitled-ontology-23#Patient">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/andrew/ontologies/2019/10/untitled-ontology-23#hasSymptom"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/andrew/ontologies/2019/10/untitled-ontology-23#Symptom"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/andrew/ontologies/2019/10/untitled-ontology-23#Symptom -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/andrew/ontologies/2019/10/untitled-ontology-23#Symptom">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/andrew/ontologies/2019/10/untitled-ontology-23#hasCause"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/andrew/ontologies/2019/10/untitled-ontology-23#Disease"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.semanticweb.org/andrew/ontologies/2019/10/untitled-ontology-23#john -->
+
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/andrew/ontologies/2019/10/untitled-ontology-23#john">
+        <rdf:type rdf:resource="http://www.semanticweb.org/andrew/ontologies/2019/10/untitled-ontology-23#Patient"/>
+        <hasSymptom rdf:resource="http://www.semanticweb.org/andrew/ontologies/2019/10/untitled-ontology-23#s1"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.semanticweb.org/andrew/ontologies/2019/10/untitled-ontology-23#s1 -->
+
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/andrew/ontologies/2019/10/untitled-ontology-23#s1">
+        <rdf:type rdf:resource="http://www.semanticweb.org/andrew/ontologies/2019/10/untitled-ontology-23#FeverAndRash"/>
+    </owl:NamedIndividual>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.5.9.2019-02-01T07:24:44Z) https://github.com/owlcs/owlapi -->
+

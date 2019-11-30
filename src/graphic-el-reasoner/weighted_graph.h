@@ -35,7 +35,7 @@ class WeightedGraph {
     std::vector<std::pair<std::pair<int, int>, int>>
         chained_role_inclusions;
     std::set<WeightedArrow> negative_weight_arrows;
-    WeightedGraph(GELGraph G);
+    WeightedGraph(GELGraph G, std::vector<int> weights);
     WeightedGraph(int V);
     void addArrow(int vertex1, int vertex2, int weight);
     int getWeight(int vertex1, int vertex2);

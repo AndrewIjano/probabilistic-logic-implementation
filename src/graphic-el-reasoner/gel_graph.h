@@ -12,6 +12,7 @@ class GELGraph {
         int role;
         int vertex;
         bool is_derivated;
+        int p_axiom_index;
     };
 
    public:

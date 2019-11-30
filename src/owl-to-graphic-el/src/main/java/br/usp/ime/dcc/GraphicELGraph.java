@@ -161,7 +161,8 @@ public class GraphicELGraph {
 	private List<String> roleList;
 
 	private static final String ISA = "ISA";
-
+	private static final String INIT = "INIT";
+	
 	public GraphicELGraph() {
 		this.V = 0;
 		this.A = 0;
@@ -171,6 +172,7 @@ public class GraphicELGraph {
 		this.iriList = new ArrayList<String>();
 		this.roleList = new ArrayList<String>();
 		this.roleList.add(ISA);
+		this.addVertex(INIT);
 	}
 
 	public void addVertex(String IRI) {
@@ -215,6 +217,14 @@ public class GraphicELGraph {
 
 	public void addArrowISA(String IRIA, String IRIB) {
 		this.addArrowRole(IRIA, IRIB, ISA);
+	}
+	
+	public void addArrowInit(String individualIRI) {
+		this.addArrowISA(INIT, individualIRI);
+	}
+	
+	public void addArrowInit(String individualIRI, Boolean isDerivated) {
+		this.addArrowISA(INIT, individualIRI, isDerivated);
 	}
 
 	public void addSubPropery(String IRIA, String IRIB) {
